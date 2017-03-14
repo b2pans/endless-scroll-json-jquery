@@ -1,1 +1,1 @@
-# endless-scroll-json-jquery
+Jquery endless scrolling with JSON data
