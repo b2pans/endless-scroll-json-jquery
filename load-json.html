@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Endless Scrolling</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+    <div>
+        <ul id="results"></ul>
+    </div>
+    <div align="center" id="loading">
+        <img src="loading.gif" />
+    </div> 
+</body>
+<style type="text/css">
+    .end{
+        color: red;
+    }
+</style>
+<script type="text/javascript">
+// AJAX setup for displaying and hiding loading image
+$.ajaxSetup({
+    beforeSend:function(){
+        $("#loading").show();
+    },
+    complete:function(){
+        $("#loading").hide();
+    }
+});
+
+//Default load first page
+var page = 1;
+
+$(document).ready(function(){
+    getJson(page);
+
+    //load again on scrolling to bottom - 100px
+    $(window).scroll(function() {
+        if(parseInt($(window).scrollTop()) + parseInt(window.innerHeight)  + 100 >= parseInt($(document).height())) {
+            //Avoid multiple loading checking if AJAX is still running
+            if($.active == 0) getJson(page);
+        }
+    });
+});
+
+function getJson(cpage){
+    var filename = "json.php?page=" + cpage + "&_=" + (new Date()).getTime();
+    $.getJSON(filename, function(result){
+        if(result == null || result == "null"){
+            $("#results").append("<li class=\"end\">You have reached the End.</li>");
+        }else{
+            $.each(result, function(i, field){
+                $("#results").append("<li></li>");
+                $.each(field, function(key, value) {
+                    var div = "<div class=\"" + key + "\">" + value + "</div>";
+                    $("#results li").last().append(div);
+                });
+            });
+        }
+    });
+    page++;
+}
+</script>
+</html>
